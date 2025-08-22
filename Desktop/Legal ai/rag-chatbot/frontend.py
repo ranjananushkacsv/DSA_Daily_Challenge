@@ -1,11 +1,9 @@
 import streamlit as st
 import os
 
-# Assuming rag_pipeline.py is in the same directory and has been run
 # You'll need to make sure the vector store is built before running this app.
 from rag_pipeline import answer_query, retrive_docs, llm_model
 
-# --- UI Customization and Theming ---
 st.set_page_config(
     page_title="AI Legal Assistant",
     layout="wide",

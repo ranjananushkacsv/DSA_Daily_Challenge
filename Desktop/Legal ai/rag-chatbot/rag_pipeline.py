@@ -1,9 +1,7 @@
-# rag_pipeline.py (Corrected Version)
 import os
 from dotenv import load_dotenv
 
 # Load environment variables from .env file
-# This should always be at the top of your script
 load_dotenv()
 
 # --- Imports for the RAG pipeline ---
@@ -12,7 +10,6 @@ from langchain_core.prompts import ChatPromptTemplate
 from langchain_community.vectorstores import FAISS
 from langchain_ollama import OllamaEmbeddings
 
-# --- Configuration ---
 # Set the path to the FAISS vector database
 FAISS_DB_PATH = "vectorstore/db_faiss"
 # Set the name of the Ollama model used for embeddings (must match the one used to create the DB)
@@ -20,7 +17,6 @@ OLLAMA_EMBEDDINGS_MODEL = "deepseek-r1:1.5b"
 # Set the name of the LLM for answering the questions
 LLM_MODEL = "mistral-large-latest"
 
-# --- Main Execution Logic ---
 try:
     # Initialize the embeddings model first, as it's required to load the FAISS DB
     embeddings = OllamaEmbeddings(model=OLLAMA_EMBEDDINGS_MODEL)
