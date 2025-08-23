@@ -1,8 +1,16 @@
 import streamlit as st
 import os
+import tempfile
+from pathlib import Path
 
-# You'll need to make sure the vector store is built before running this app.
-from rag_pipeline import answer_query, retrive_docs, llm_model
+# Import your existing RAG pipeline functions
+from rag_pipeline import answer_query, llm_model
+
+# Import vector database functions for dynamic processing
+from langchain_community.document_loaders import PDFPlumberLoader
+from langchain_text_splitters import RecursiveCharacterTextSplitter
+from langchain_ollama import OllamaEmbeddings
+from langchain_community.vectorstores import FAISS
 
 st.set_page_config(
     page_title="AI Legal Assistant",
@@ -20,10 +28,10 @@ st.markdown("""
     }
 
     .stApp {
-        background-color: #f0f2f6; /* Light gray background */
+        background-color: #f0f2f6;
     }
 
-    .css-1d391kg, .css-1y4p8bb { /* Streamlit container classes for main content */
+    .css-1d391kg, .css-1y4p8bb {
         background-color: #ffffff;
         padding: 2rem;
         border-radius: 10px;
@@ -59,7 +67,6 @@ st.markdown("""
         padding: 10px;
     }
     
-    /* Custom chat message colors */
     [data-testid="stChatMessage"][role="user"] {
         background-color: #e3f2fd;
         border-radius: 10px;
@@ -79,72 +86,195 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-# Use markdown and columns for a more visually appealing layout
-st.markdown("<h1 style='text-align: center; color: #1f77b4;'>AI Legal Assistant</h1>", unsafe_allow_html=True)
-st.markdown("<p style='text-align: center; color: #555;'>Your trusted assistant for legal document queries.</p>", unsafe_allow_html=True)
+# Initialize session state variables
+if "messages" not in st.session_state:
+    st.session_state.messages = []
+if "vector_db" not in st.session_state:
+    st.session_state.vector_db = None
+if "current_file_name" not in st.session_state:
+    st.session_state.current_file_name = None
 
-# Create two columns for a cleaner layout
+# Functions for dynamic PDF processing
+@st.cache_resource
+def get_embeddings_model():
+    """Initialize and cache the embeddings model"""
+    try:
+        embeddings = OllamaEmbeddings(model="deepseek-r1:1.5b")
+        return embeddings
+    except Exception as e:
+        st.error(f"Error initializing embeddings model: {e}")
+        return None
+
+def process_uploaded_pdf(uploaded_file):
+    """Process uploaded PDF and create vector database"""
+    try:
+        # Create a temporary file to save the uploaded PDF
+        with tempfile.NamedTemporaryFile(delete=False, suffix=".pdf") as temp_file:
+            temp_file.write(uploaded_file.read())
+            temp_file_path = temp_file.name
+        
+        # Load the PDF
+        loader = PDFPlumberLoader(temp_file_path)
+        documents = loader.load()
+        
+        if not documents:
+            st.error("No content found in the uploaded PDF.")
+            return None
+        
+        # Create text chunks
+        text_splitter = RecursiveCharacterTextSplitter(
+            chunk_size=1000,
+            chunk_overlap=200,
+            add_start_index=True
+        )
+        text_chunks = text_splitter.split_documents(documents)
+        
+        # Get embeddings model
+        embeddings = get_embeddings_model()
+        if not embeddings:
+            return None
+        
+        # Create vector database
+        vector_db = FAISS.from_documents(text_chunks, embeddings)
+        
+        # Clean up temporary file
+        os.unlink(temp_file_path)
+        
+        return vector_db, len(documents), len(text_chunks)
+        
+    except Exception as e:
+        st.error(f"Error processing PDF: {e}")
+        return None
+
+def retrieve_docs_from_db(query, vector_db):
+    """Retrieve documents from the provided vector database"""
+    if vector_db is None:
+        return []
+    return vector_db.similarity_search(query)
+
+def get_context_from_docs(documents):
+    """Get context from retrieved documents"""
+    context = "\n\n".join([doc.page_content for doc in documents])
+    return context
+
+# Header
+st.markdown("<h1 style='text-align: center; color: #1f77b4;'>AI Legal Assistant</h1>", unsafe_allow_html=True)
+st.markdown("<p style='text-align: center; color: #555;'>Upload your legal document and ask questions about its content.</p>", unsafe_allow_html=True)
+
+# Create two columns for layout
 col1, col2 = st.columns([1, 2])
 
 with col1:
-    # PDF Upload section with a clear title
     st.subheader("1. Upload a Legal Document")
     uploaded_file = st.file_uploader(
         "Upload PDF",
         type="pdf",
         accept_multiple_files=False,
-        help="Please upload a PDF document to begin."
+        help="Upload a PDF document to analyze its content."
     )
-
-    # Basic instructions
-    st.info("After uploading the document, you can ask questions about its content.")
+    
+    # Process uploaded file
+    if uploaded_file is not None:
+        file_name = uploaded_file.name
+        
+        # Check if this is a new file
+        if st.session_state.current_file_name != file_name:
+            st.session_state.current_file_name = file_name
+            
+            with st.spinner("Processing your document... This may take a moment."):
+                result = process_uploaded_pdf(uploaded_file)
+                
+                if result:
+                    vector_db, num_pages, num_chunks = result
+                    st.session_state.vector_db = vector_db
+                    
+                    st.success(f"✅ Document processed successfully!")
+                    st.info(f"📄 Pages: {num_pages} | 📝 Text chunks: {num_chunks}")
+                    
+                    # Clear previous messages when new file is uploaded
+                    st.session_state.messages = []
+                else:
+                    st.error("❌ Failed to process the document. Please try again.")
+        else:
+            st.success(f"✅ Document '{file_name}' is ready for questions!")
+    
+    # Instructions
+    if uploaded_file is None:
+        st.info("👆 Please upload a PDF document to get started.")
+    else:
+        st.success("🎉 Document loaded! You can now ask questions in the chat.")
 
 with col2:
-    # Chatbot section
     st.subheader("2. Chat with the AI Lawyer")
     
-    # Use session state to store chat history
-    if "messages" not in st.session_state:
-        st.session_state.messages = []
-
-    # Display chat messages from history on app rerun
+    # Display chat messages from history
     for message in st.session_state.messages:
         with st.chat_message(message["role"]):
             st.write(message["content"])
     
-    # Text area for user input with a clear label
-    user_query = st.text_area(
-        "Enter your query:",
-        height=100,
-        placeholder="e.g., 'What are the grounds for divorce?'",
-        label_visibility="collapsed"
-    )
-
-    # Use Streamlit's button with a key for better control
-    ask_question = st.button("Ask AI Lawyer")
-
-    # --- RAG pipeline logic ---
-    if ask_question:
+    # Chat input
+    user_query = st.chat_input("Ask a question about your document...")
+    
+    # Process user query
+    if user_query:
         if uploaded_file is None:
-            st.error("Please upload a valid file first.")
-        elif user_query.strip() == "":
-            st.warning("Please enter a query.")
+            st.error("Please upload a PDF file first.")
+        elif st.session_state.vector_db is None:
+            st.error("Document is still being processed. Please wait.")
         else:
             # Add user message to chat history
             st.session_state.messages.append({"role": "user", "content": user_query})
             with st.chat_message("user"):
                 st.write(user_query)
 
-            # Retrieve and answer
+            # Generate response
             try:
-                retrived_docs = retrive_docs(user_query)
-                response = answer_query(documents=retrived_docs, model=llm_model, query=user_query)
-                
-                # Add AI response to chat history
-                st.session_state.messages.append({"role": "AI Lawyer", "content": response})
-                with st.chat_message("AI Lawyer"):
-                    st.write(response)
+                with st.chat_message("assistant"):
+                    with st.spinner("Thinking..."):
+                        # Retrieve relevant documents
+                        retrieved_docs = retrieve_docs_from_db(user_query, st.session_state.vector_db)
+                        
+                        if not retrieved_docs:
+                            response = "I couldn't find relevant information in the document to answer your question. Please try rephrasing or ask about different content."
+                        else:
+                            # Generate answer using your existing function
+                            response = answer_query(
+                                documents=retrieved_docs, 
+                                model=llm_model, 
+                                query=user_query
+                            )
+                        
+                        st.write(response)
+                        
+                        # Add AI response to chat history
+                        st.session_state.messages.append({"role": "assistant", "content": response})
             
             except Exception as e:
-                st.error(f"An error occurred: {e}")
-                st.error("Please ensure your RAG pipeline and vector database are set up correctly.")
+                st.error(f"An error occurred while generating the response: {e}")
+                st.error("Please ensure your models are running correctly.")
+
+# Sidebar with information
+with st.sidebar:
+    
+    st.header("System Status")
+    if uploaded_file:
+        st.success("✅ Document loaded")
+        if st.session_state.vector_db:
+            st.success("Ready to answer questions")
+        else:
+            st.warning("⏳ Processing document...")
+    else:
+        st.info("⏳ Waiting for document upload")
+    
+    st.header("🔧 Features")
+    st.markdown("""
+    - **Dynamic PDF processing**
+    - **Semantic search**
+    - **Context-aware responses**
+    - **Chat history**
+    - **Error handling**
+    """)
+
+# Footer
+st.markdown("---")
+st.markdown("<p style='text-align: center; color: #666;'>AI Legal Assistant - Powered by RAG Technology</p>", unsafe_allow_html=True)

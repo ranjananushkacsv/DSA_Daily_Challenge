@@ -15,7 +15,7 @@ FAISS_DB_PATH = "vectorstore/db_faiss"
 # Set the name of the Ollama model used for embeddings (must match the one used to create the DB)
 OLLAMA_EMBEDDINGS_MODEL = "deepseek-r1:1.5b"
 # Set the name of the LLM for answering the questions
-LLM_MODEL = "mistral-large-latest"
+LLM_MODEL = "mistral-small-latest"
 
 try:
     # Initialize the embeddings model first, as it's required to load the FAISS DB
