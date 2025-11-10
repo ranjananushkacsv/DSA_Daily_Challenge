@@ -13,4 +13,13 @@ def canPlaceFlowers(self, flowerbed: List[int], n: int) -> bool:
                 return True
             
     return count>=n
+
+'''
+APPROACH - 
+
+1. Iterate through each position in flowerbed
+2. check if current and right and left spots exists or are equal to 0
+3. if all the conditions are satisfied plant the flower and inc the count by 1
+4. return true if count>=n
+'''
      
