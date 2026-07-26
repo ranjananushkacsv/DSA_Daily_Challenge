@@ -1,0 +1,271 @@
+[
+  {
+    "id": 1,
+    "title": "Vegetable Stir Fry",
+    "image": "/static/images/recipe1.jpg",
+    "readyInMinutes": 20,
+    "servings": 2,
+    "diets": ["vegetarian", "gluten free"],
+    "ingredients": [
+      "1 bell pepper, sliced",
+      "2 carrots, julienned",
+      "1 cup broccoli florets",
+      "1 onion, sliced",
+      "2 cloves garlic, minced",
+      "2 tbsp soy sauce",
+      "1 tbsp olive oil",
+      "1 tsp ginger, grated",
+      "Salt and pepper to taste"
+    ],
+    "instructions": "1. Heat olive oil in a large wok or pan over high heat\n2. Add garlic and ginger, stir for 30 seconds until fragrant\n3. Add carrots and broccoli, stir-fry for 3-4 minutes\n4. Add bell peppers and onions, cook for another 2-3 minutes\n5. Pour in soy sauce and season with salt and pepper\n6. Stir-fry for another 2 minutes until vegetables are tender-crisp\n7. Serve hot with rice or noodles",
+    "nutrition": {
+      "calories": 250,
+      "protein": 8,
+      "carbs": 35,
+      "fat": 10
+    },
+    "cuisine": "Asian",
+    "difficulty": "Easy"
+  },
+  {
+    "id": 2,
+    "title": "Berry Smoothie Bowl",
+    "image": "/static/images/recipe2.jpg",
+    "readyInMinutes": 5,
+    "servings": 1,
+    "diets": ["vegetarian", "gluten free", "dairy free"],
+    "ingredients": [
+      "1 banana, frozen",
+      "1/2 cup strawberries, frozen",
+      "1/4 cup blueberries, frozen",
+      "1/4 cup almond milk",
+      "1 tbsp honey or maple syrup",
+      "2 tbsp granola",
+      "1 tbsp chia seeds",
+      "Fresh berries for topping"
+    ],
+    "instructions": "1. Combine frozen banana, strawberries, blueberries, and almond milk in a blender\n2. Blend until smooth and creamy\n3. Add honey or maple syrup to taste\n4. Pour into a bowl and top with granola, chia seeds, and fresh berries\n5. Serve immediately",
+    "nutrition": {
+      "calories": 280,
+      "protein": 6,
+      "carbs": 58,
+      "fat": 5
+    },
+    "cuisine": "International",
+    "difficulty": "Very Easy"
+  },
+  {
+    "id": 3,
+    "title": "Classic Cheese Omelette",
+    "image": "/static/images/recipe3.jpg",
+    "readyInMinutes": 10,
+    "servings": 1,
+    "diets": ["vegetarian", "gluten free"],
+    "ingredients": [
+      "2 large eggs",
+      "2 tbsp milk",
+      "1/4 cup shredded cheese",
+      "1 tbsp butter",
+      "Salt and pepper to taste",
+      "Fresh chives for garnish"
+    ],
+    "instructions": "1. Whisk eggs with milk, salt, and pepper until frothy\n2. Melt butter in a non-stick pan over medium heat\n3. Pour egg mixture into the pan\n4. Cook until edges start to set, then push cooked portions to center\n5. When eggs are mostly set, sprinkle cheese on one half\n6. Fold the other half over the cheese\n7. Cook for another minute until cheese melts\n8. Garnish with chives and serve",
+    "nutrition": {
+      "calories": 320,
+      "protein": 22,
+      "carbs": 2,
+      "fat": 25
+    },
+    "cuisine": "French",
+    "difficulty": "Easy"
+  },
+  {
+    "id": 4,
+    "title": "Creamy Tomato Pasta",
+    "image": "/static/images/recipe4.jpg",
+    "readyInMinutes": 25,
+    "servings": 2,
+    "diets": ["vegetarian"],
+    "ingredients": [
+      "200g pasta",
+      "2 cups tomato sauce",
+      "1/2 cup heavy cream",
+      "1 onion, diced",
+      "2 cloves garlic, minced",
+      "2 tbsp olive oil",
+      "1/4 cup fresh basil",
+      "Salt and pepper to taste",
+      "Parmesan cheese for serving"
+    ],
+    "instructions": "1. Cook pasta according to package directions\n2. Heat olive oil in a pan and sauté onions until soft\n3. Add garlic and cook for 1 minute\n4. Pour in tomato sauce and simmer for 10 minutes\n5. Stir in heavy cream and heat through\n6. Season with salt, pepper, and fresh basil\n7. Drain pasta and mix with sauce\n8. Serve with grated Parmesan cheese",
+    "nutrition": {
+      "calories": 450,
+      "protein": 15,
+      "carbs": 65,
+      "fat": 16
+    },
+    "cuisine": "Italian",
+    "difficulty": "Easy"
+  },
+  {
+    "id": 5,
+    "title": "Grilled Chicken Salad",
+    "image": "/static/images/recipe5.jpg",
+    "readyInMinutes": 15,
+    "servings": 2,
+    "diets": ["gluten free"],
+    "ingredients": [
+      "2 chicken breasts",
+      "4 cups mixed greens",
+      "1 cucumber, sliced",
+      "1 cup cherry tomatoes, halved",
+      "1/4 red onion, sliced",
+      "2 tbsp olive oil",
+      "1 lemon, juiced",
+      "Salt and pepper to taste",
+      "Fresh herbs for garnish"
+    ],
+    "instructions": "1. Season chicken breasts with salt and pepper\n2. Grill chicken for 6-7 minutes per side until cooked through\n3. Let chicken rest, then slice\n4. In a large bowl, combine mixed greens, cucumber, tomatoes, and onion\n5. Whisk together olive oil, lemon juice, salt, and pepper for dressing\n6. Toss salad with dressing\n7. Top with sliced chicken and fresh herbs\n8. Serve immediately",
+    "nutrition": {
+      "calories": 320,
+      "protein": 35,
+      "carbs": 12,
+      "fat": 15
+    },
+    "cuisine": "American",
+    "difficulty": "Easy"
+  },
+  {
+    "id": 6,
+    "title": "Avocado Toast with Egg",
+    "image": "/static/images/recipe6.jpg",
+    "readyInMinutes": 10,
+    "servings": 1,
+    "diets": ["vegetarian"],
+    "ingredients": [
+      "2 slices whole grain bread",
+      "1 ripe avocado",
+      "2 eggs",
+      "1 tbsp lemon juice",
+      "Salt and pepper to taste",
+      "Red pepper flakes",
+      "Microgreens for garnish"
+    ],
+    "instructions": "1. Toast bread until golden and crisp\n2. Mash avocado with lemon juice, salt, and pepper\n3. Fry or poach eggs to your preference\n4. Spread avocado mixture on toast\n5. Top with eggs and sprinkle with red pepper flakes\n6. Garnish with microgreens\n7. Serve immediately",
+    "nutrition": {
+      "calories": 380,
+      "protein": 18,
+      "carbs": 28,
+      "fat": 24
+    },
+    "cuisine": "International",
+    "difficulty": "Very Easy"
+  },
+  {
+    "id": 7,
+    "title": "Hearty Vegetable Soup",
+    "image": "/static/images/recipe7.jpg",
+    "readyInMinutes": 30,
+    "servings": 4,
+    "diets": ["vegetarian", "gluten free", "vegan"],
+    "ingredients": [
+      "2 carrots, diced",
+      "2 potatoes, cubed",
+      "1 onion, chopped",
+      "2 celery stalks, sliced",
+      "4 cups vegetable broth",
+      "2 cloves garlic, minced",
+      "1 tbsp olive oil",
+      "1 tsp thyme",
+      "1 bay leaf",
+      "Salt and pepper to taste"
+    ],
+    "instructions": "1. Heat olive oil in a large pot\n2. Sauté onions, carrots, and celery until softened\n3. Add garlic and cook for 1 minute\n4. Add potatoes, vegetable broth, thyme, and bay leaf\n5. Bring to a boil, then reduce heat and simmer for 20 minutes\n6. Season with salt and pepper\n7. Remove bay leaf before serving\n8. Serve hot with crusty bread",
+    "nutrition": {
+      "calories": 180,
+      "protein": 4,
+      "carbs": 35,
+      "fat": 3
+    },
+    "cuisine": "International",
+    "difficulty": "Easy"
+  },
+  {
+    "id": 8,
+    "title": "Yogurt Parfait",
+    "image": "/static/images/recipe8.jpg",
+    "readyInMinutes": 5,
+    "servings": 1,
+    "diets": ["vegetarian", "gluten free"],
+    "ingredients": [
+      "1 cup Greek yogurt",
+      "1/2 cup mixed berries",
+      "1/4 cup granola",
+      "1 tbsp honey",
+      "1 tbsp nuts, chopped",
+      "Mint leaves for garnish"
+    ],
+    "instructions": "1. In a glass or bowl, layer half the yogurt\n2. Add a layer of mixed berries\n3. Sprinkle with half the granola\n4. Repeat layers with remaining ingredients\n5. Drizzle with honey and top with nuts\n6. Garnish with mint leaves\n7. Serve immediately",
+    "nutrition": {
+      "calories": 320,
+      "protein": 20,
+      "carbs": 45,
+      "fat": 8
+    },
+    "cuisine": "International",
+    "difficulty": "Very Easy"
+  },
+  {
+    "id": 9,
+    "title": "Garlic Butter Shrimp",
+    "image": "/static/images/recipe9.jpg",
+    "readyInMinutes": 15,
+    "servings": 2,
+    "diets": ["gluten free"],
+    "ingredients": [
+      "1 lb shrimp, peeled and deveined",
+      "4 cloves garlic, minced",
+      "3 tbsp butter",
+      "2 tbsp olive oil",
+      "1 lemon, juiced",
+      "2 tbsp fresh parsley, chopped",
+      "Salt and pepper to taste",
+      "Red pepper flakes (optional)"
+    ],
+    "instructions": "1. Pat shrimp dry and season with salt and pepper\n2. Heat butter and olive oil in a large pan\n3. Add garlic and cook for 1 minute until fragrant\n4. Add shrimp and cook for 2-3 minutes per side\n5. Add lemon juice and red pepper flakes\n6. Stir in fresh parsley\n7. Serve immediately with rice or crusty bread",
+    "nutrition": {
+      "calories": 280,
+      "protein": 35,
+      "carbs": 4,
+      "fat": 14
+    },
+    "cuisine": "Mediterranean",
+    "difficulty": "Easy"
+  },
+  {
+    "id": 10,
+    "title": "Chocolate Banana Smoothie",
+    "image": "/static/images/recipe10.jpg",
+    "readyInMinutes": 5,
+    "servings": 1,
+    "diets": ["vegetarian", "gluten free"],
+    "ingredients": [
+      "1 banana, frozen",
+      "1 cup milk",
+      "2 tbsp cocoa powder",
+      "1 tbsp honey",
+      "1/2 tsp vanilla extract",
+      "Ice cubes (optional)",
+      "Whipped cream for topping (optional)"
+    ],
+    "instructions": "1. Combine all ingredients in a blender\n2. Blend until smooth and creamy\n3. Add ice cubes if desired for thicker consistency\n4. Pour into a glass\n5. Top with whipped cream if using\n6. Serve immediately",
+    "nutrition": {
+      "calories": 250,
+      "protein": 10,
+      "carbs": 45,
+      "fat": 6
+    },
+    "cuisine": "International",
+    "difficulty": "Very Easy"
+  }
+]

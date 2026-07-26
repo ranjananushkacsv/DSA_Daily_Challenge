@@ -1,0 +1,350 @@
+{% extends "base.html" %}
+
+{% block title %}{{ recipe.title }} - Smart Recipe Generator{% endblock %}
+
+{% block content %}
+<div class="recipe-detail-container">
+    <div class="container">
+        <!-- Recipe Header -->
+        <div class="recipe-header">
+            <div class="recipe-hero">
+                <img src="{% if recipe.image %}{{ recipe.image }}{% else %}{{ url_for('static', filename='images/recipe-placeholder.jpg') }}{% endif %}" 
+                     alt="{{ recipe.title }}"
+                     class="recipe-hero-image"
+                     onerror="handleImageError(this)">
+                
+                <div class="recipe-hero-content">
+                    <div class="recipe-meta">
+                        <button class="favorite-btn-large {% if recipe.id in session.get('favorites', []) %}favorited{% endif %}" 
+                                onclick="toggleFavorite({{ recipe.id }}, this)">
+                            <i class="{% if recipe.id in session.get('favorites', []) %}fas{% else %}far{% endif %} fa-heart"></i>
+                            <span>{% if recipe.id in session.get('favorites', []) %}Saved{% else %}Save Recipe{% endif %}</span>
+                        </button>
+                        
+                        <div class="meta-stats">
+                            <div class="meta-stat">
+                                <i class="fas fa-clock"></i>
+                                <span>{{ recipe.readyInMinutes }} min</span>
+                            </div>
+                            <div class="meta-stat">
+                                <i class="fas fa-users"></i>
+                                <span>{{ recipe.servings }} servings</span>
+                            </div>
+                            <div class="meta-stat">
+                                <i class="fas fa-fire"></i>
+                                <span>{{ recipe.nutrition.calories }} cal</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <h1 class="recipe-title">{{ recipe.title }}</h1>
+                    
+                    {% if recipe.diets %}
+                    <div class="diet-tags">
+                        {% for diet in recipe.diets %}
+                            <span class="diet-tag">{{ diet.title() }}</span>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Recipe Content -->
+        <div class="recipe-content-grid">
+            <!-- Ingredients -->
+            <div class="ingredients-section">
+                <h2><i class="fas fa-shopping-basket"></i> Ingredients</h2>
+                <div class="serving-controls">
+                    <label>Servings:</label>
+                    <div class="serving-buttons">
+                        <button onclick="adjustServings(-1)">-</button>
+                        <span id="servingCount">{{ recipe.servings }}</span>
+                        <button onclick="adjustServings(1)">+</button>
+                    </div>
+                </div>
+                
+                <ul class="ingredients-list" id="ingredientsList">
+                    {% for ingredient in recipe.ingredients %}
+                        <li class="ingredient-item">
+                            <input type="checkbox" id="ing{{ loop.index }}">
+                            <label for="ing{{ loop.index }}">
+                                <span class="checkmark"></span>
+                                {{ ingredient }}
+                            </label>
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
+
+            <!-- Instructions -->
+            <div class="instructions-section">
+                <h2><i class="fas fa-list-ol"></i> Instructions</h2>
+                <div class="instructions-content">
+                    {% if recipe.instructions %}
+                        {% set instructions = recipe.instructions.split('\n') %}
+                        {% for instruction in instructions %}
+                            {% if instruction.strip() %}
+                            <div class="instruction-step">
+                                <div class="step-number">{{ loop.index }}</div>
+                                <div class="step-content">
+                                    <p>{{ instruction.strip() }}</p>
+                                </div>
+                            </div>
+                            {% endif %}
+                        {% endfor %}
+                    {% else %}
+                        <div class="no-instructions">
+                            <i class="fas fa-info-circle"></i>
+                            <p>No detailed instructions available for this recipe.</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Nutrition -->
+            <div class="nutrition-section">
+                <h2><i class="fas fa-chart-pie"></i> Nutrition</h2>
+                <div class="nutrition-facts">
+                    <div class="nutrition-item">
+                        <div class="nutrition-label">Calories</div>
+                        <div class="nutrition-value">{{ recipe.nutrition.calories }}</div>
+                    </div>
+                    <div class="nutrition-item">
+                        <div class="nutrition-label">Protein</div>
+                        <div class="nutrition-value">{{ recipe.nutrition.protein }}g</div>
+                    </div>
+                    <div class="nutrition-item">
+                        <div class="nutrition-label">Carbs</div>
+                        <div class="nutrition-value">{{ recipe.nutrition.carbs }}g</div>
+                    </div>
+                    <div class="nutrition-item">
+                        <div class="nutrition-label">Fat</div>
+                        <div class="nutrition-value">{{ recipe.nutrition.fat }}g</div>
+                    </div>
+                </div>
+                
+                <!-- Nutrition Visualization -->
+                <div class="nutrition-chart">
+                    <div class="chart-bar protein" style="width: {{ (recipe.nutrition.protein / 50 * 100) }}%">
+                        <span>Protein</span>
+                    </div>
+                    <div class="chart-bar carbs" style="width: {{ (recipe.nutrition.carbs / 100 * 100) }}%">
+                        <span>Carbs</span>
+                    </div>
+                    <div class="chart-bar fat" style="width: {{ (recipe.nutrition.fat / 50 * 100) }}%">
+                        <span>Fat</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="recipe-actions">
+            <button class="btn btn-secondary" onclick="printRecipe()">
+                <i class="fas fa-print"></i>
+                Print Recipe
+            </button>
+            <button class="btn btn-secondary" onclick="shareRecipe()">
+                <i class="fas fa-share-alt"></i>
+                Share Recipe
+            </button>
+            <a href="{{ url_for('get_recipes') }}" class="btn btn-primary">
+                <i class="fas fa-arrow-left"></i>
+                Back to Recipes
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+// Add the missing handleImageError function
+function handleImageError(img) {
+    const placeholder = '{{ url_for("static", filename="images/recipe-placeholder.jpg") }}';
+    if (img.src !== placeholder) {
+        console.log('Image failed to load, replacing with placeholder:', img.src);
+        img.src = placeholder;
+        img.onerror = null; // Prevent infinite loop
+    }
+}
+
+let currentServings = {{ recipe.servings }};
+const originalIngredients = {{ recipe.ingredients|tojson }};
+
+function adjustServings(change) {
+    currentServings = Math.max(1, currentServings + change);
+    document.getElementById('servingCount').textContent = currentServings;
+    updateIngredients();
+}
+
+function updateIngredients() {
+    const factor = currentServings / {{ recipe.servings }};
+    const ingredientsList = document.getElementById('ingredientsList');
+    
+    ingredientsList.innerHTML = originalIngredients.map((ingredient, index) => {
+        // Simple scaling - in a real app you'd parse amounts
+        const scaledIngredient = ingredient.replace(/(\d+(\.\d+)?)/g, match => {
+            const amount = parseFloat(match);
+            return (amount * factor).toFixed(1).replace(/\.0$/, '');
+        });
+        
+        return `
+            <li class="ingredient-item">
+                <input type="checkbox" id="ing${index + 1}">
+                <label for="ing${index + 1}">
+                    <span class="checkmark"></span>
+                    ${scaledIngredient}
+                </label>
+            </li>
+        `;
+    }).join('');
+}
+
+async function toggleFavorite(recipeId, button) {
+    try {
+        const response = await fetch('/toggle_favorite/' + recipeId, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+            const icon = button.querySelector('i');
+            const text = button.querySelector('span');
+            
+            if (data.is_favorite) {
+                button.classList.add('favorited');
+                icon.classList.remove('far');
+                icon.classList.add('fas');
+                text.textContent = 'Saved';
+            } else {
+                button.classList.remove('favorited');
+                icon.classList.remove('fas');
+                icon.classList.add('far');
+                text.textContent = 'Save Recipe';
+            }
+            
+            showToast(data.message, 'success');
+        }
+    } catch (error) {
+        showToast('Error updating favorites', 'error');
+    }
+}
+
+function printRecipe() {
+    window.print();
+}
+
+function shareRecipe() {
+    if (navigator.share) {
+        navigator.share({
+            title: '{{ recipe.title }}',
+            text: 'Check out this delicious recipe from SmartRecipes!',
+            url: window.location.href
+        });
+    } else {
+        // Fallback: copy to clipboard
+        navigator.clipboard.writeText(window.location.href).then(() => {
+            showToast('Recipe link copied to clipboard!', 'success');
+        });
+    }
+}
+
+function showToast(message, type) {
+    // Remove existing toasts
+    document.querySelectorAll('.toast').forEach(toast => toast.remove());
+    
+    const toast = document.createElement('div');
+    toast.className = `toast toast-${type}`;
+    toast.innerHTML = `
+        <span>${message}</span>
+        <button onclick="this.parentElement.remove()">&times;</button>
+    `;
+    
+    document.body.appendChild(toast);
+    
+    setTimeout(() => {
+        if (toast.parentElement) {
+            toast.remove();
+        }
+    }, 3000);
+}
+
+// Initialize ingredient checkboxes
+document.addEventListener('DOMContentLoaded', function() {
+    const checkboxes = document.querySelectorAll('.ingredient-item input');
+    checkboxes.forEach(checkbox => {
+        checkbox.addEventListener('change', function() {
+            const label = this.nextElementSibling;
+            if (this.checked) {
+                label.style.textDecoration = 'line-through';
+                label.style.opacity = '0.6';
+            } else {
+                label.style.textDecoration = 'none';
+                label.style.opacity = '1';
+            }
+        });
+    });
+});
+
+// Add toast styles if not already added
+if (!document.querySelector('#toast-styles')) {
+    const toastStyles = `
+    .toast {
+        position: fixed;
+        top: 100px;
+        right: 20px;
+        background: white;
+        padding: 1rem 1.5rem;
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        z-index: 1000;
+        animation: slideInRight 0.3s ease;
+    }
+    .toast-success {
+        border-left: 4px solid #2E8B57;
+    }
+    .toast-error {
+        border-left: 4px solid #FF6B6B;
+    }
+    @keyframes slideInRight {
+        from { transform: translateX(100%); opacity: 0; }
+        to { transform: translateX(0); opacity: 1; }
+    }`;
+    
+    const styleSheet = document.createElement('style');
+    styleSheet.id = 'toast-styles';
+    styleSheet.textContent = toastStyles;
+    document.head.appendChild(styleSheet);
+}
+</script>
+
+<style>
+/* Print Styles */
+@media print {
+    .navbar,
+    .footer,
+    .recipe-actions,
+    .favorite-btn-large {
+        display: none !important;
+    }
+    
+    .recipe-detail-container {
+        margin: 0;
+        padding: 0;
+    }
+    
+    .recipe-hero-image {
+        max-height: 300px;
+    }
+}
+</style>
+{% endblock %}

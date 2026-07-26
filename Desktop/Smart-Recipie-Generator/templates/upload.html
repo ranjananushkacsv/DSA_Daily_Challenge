@@ -1,0 +1,205 @@
+{% extends "base.html" %}
+
+{% block title %}Add Ingredients - Smart Recipe Generator{% endblock %}
+
+{% block content %}
+<div class="upload-container">
+    <div class="container">
+        <div class="upload-header">
+            <h1>Add Your Ingredients</h1>
+            <p>Upload a photo or manually enter your available ingredients</p>
+        </div>
+
+        <div class="upload-methods">
+            <!-- Image Upload Method -->
+            <div class="upload-method-card">
+                <div class="method-icon">
+                    <i class="fas fa-camera"></i>
+                </div>
+                <h3>Upload Image</h3>
+                <p>Take a photo of your ingredients and let AI identify them</p>
+                
+                <form method="POST" enctype="multipart/form-data" class="upload-form">
+                    <div class="file-upload-area" id="fileUploadArea">
+                        <i class="fas fa-cloud-upload-alt"></i>
+                        <h4>Drop your image here or click to browse</h4>
+                        <p>Supports JPG, PNG, GIF (Max 16MB)</p>
+                        <input type="file" name="image" id="imageInput" accept="image/*" hidden>
+                        <button type="button" class="btn btn-outline" onclick="document.getElementById('imageInput').click()">
+                            Choose File
+                        </button>
+                    </div>
+                    <div id="fileInfo" class="file-info" style="display: none;">
+                        <span id="fileName"></span>
+                        <button type="button" onclick="clearFile()" class="btn-remove">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-full" id="uploadBtn" style="display: none;">
+                        <i class="fas fa-search"></i>
+                        Analyze Image
+                    </button>
+                </form>
+            </div>
+
+            <!-- Manual Input Method -->
+            <div class="upload-method-card">
+                <div class="method-icon">
+                    <i class="fas fa-keyboard"></i>
+                </div>
+                <h3>Manual Input</h3>
+                <p>Type your ingredients separated by commas</p>
+                
+                <form method="POST" class="manual-form">
+                    <div class="form-group">
+                        <label for="ingredients">Your Ingredients:</label>
+                        <textarea 
+                            name="ingredients" 
+                            id="ingredients" 
+                            placeholder="e.g., chicken, rice, broccoli, garlic, olive oil..."
+                            rows="4"
+                        >{% if ingredients %}{{ ingredients|join(', ') }}{% endif %}</textarea>
+                        <div class="char-count">
+                            <span id="ingredientCount">0</span> ingredients added
+                        </div>
+                    </div>
+                    
+                    <div class="quick-ingredients">
+                        <h4>Quick Add Common Ingredients:</h4>
+                        <div class="quick-tags">
+                            {% for tag in ['chicken', 'rice', 'pasta', 'tomato', 'onion', 'garlic', 'cheese', 'egg', 'milk', 'flour', 'sugar', 'butter'] %}
+                                <span class="tag" onclick="addIngredient('{{ tag }}')">{{ tag }}</span>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary btn-full">
+                        <i class="fas fa-search"></i>
+                        Find Recipes
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Detected Ingredients Display -->
+        {% if ingredients %}
+        <div class="detected-ingredients">
+            <div class="ingredients-header">
+                <h3><i class="fas fa-check-circle"></i> Ingredients Ready!</h3>
+                <a href="{{ url_for('clear_ingredients') }}" class="btn-clear">Clear All</a>
+            </div>
+            
+            {% if image_url %}
+            <div class="uploaded-image-preview">
+                <img src="{{ image_url }}" alt="Uploaded ingredients">
+            </div>
+            {% endif %}
+            
+            <div class="ingredients-tags">
+                {% for ingredient in ingredients %}
+                    <span class="ingredient-tag">
+                        {{ ingredient }}
+                        <i class="fas fa-check"></i>
+                    </span>
+                {% endfor %}
+            </div>
+            
+            <div class="ingredients-actions">
+                <a href="{{ url_for('get_recipes') }}" class="btn btn-primary btn-large">
+                    <i class="fas fa-utensils"></i>
+                    Find Recipes with These Ingredients
+                </a>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+// Prevent form resubmission on refresh - NEW ADDITION
+if (window.history.replaceState) {
+    window.history.replaceState(null, null, window.location.href);
+}
+
+// Clear file input on page load - NEW ADDITION
+const fileInput = document.querySelector('input[type="file"]');
+if (fileInput) {
+    fileInput.value = '';
+}
+
+// Your existing functions...
+function addIngredient(ingredient) {
+    const textarea = document.getElementById('ingredients');
+    const current = textarea.value.trim();
+    const ingredients = current ? current.split(',').map(i => i.trim()) : [];
+    
+    if (!ingredients.includes(ingredient)) {
+        ingredients.push(ingredient);
+        textarea.value = ingredients.join(', ');
+        updateIngredientCount();
+    }
+}
+
+function updateIngredientCount() {
+    const textarea = document.getElementById('ingredients');
+    const ingredients = textarea.value.split(',').filter(i => i.trim());
+    document.getElementById('ingredientCount').textContent = ingredients.length;
+}
+
+// File upload handling
+const fileInput = document.getElementById('imageInput');
+const fileUploadArea = document.getElementById('fileUploadArea');
+const fileInfo = document.getElementById('fileInfo');
+const fileName = document.getElementById('fileName');
+const uploadBtn = document.getElementById('uploadBtn');
+
+fileInput.addEventListener('change', function(e) {
+    if (this.files.length > 0) {
+        const file = this.files[0];
+        fileName.textContent = file.name;
+        fileInfo.style.display = 'flex';
+        uploadBtn.style.display = 'block';
+        fileUploadArea.style.borderColor = '#2E8B57';
+    }
+});
+
+function clearFile() {
+    fileInput.value = '';
+    fileInfo.style.display = 'none';
+    uploadBtn.style.display = 'none';
+    fileUploadArea.style.borderColor = '#ddd';
+}
+
+// Drag and drop
+fileUploadArea.addEventListener('dragover', (e) => {
+    e.preventDefault();
+    fileUploadArea.style.borderColor = '#2E8B57';
+    fileUploadArea.style.backgroundColor = '#f0fff0';
+});
+
+fileUploadArea.addEventListener('dragleave', () => {
+    fileUploadArea.style.borderColor = '#ddd';
+    fileUploadArea.style.backgroundColor = '#fafafa';
+});
+
+fileUploadArea.addEventListener('drop', (e) => {
+    e.preventDefault();
+    fileUploadArea.style.borderColor = '#ddd';
+    fileUploadArea.style.backgroundColor = '#fafafa';
+    
+    if (e.dataTransfer.files.length) {
+        fileInput.files = e.dataTransfer.files;
+        const event = new Event('change');
+        fileInput.dispatchEvent(event);
+    }
+});
+
+// Initialize
+document.addEventListener('DOMContentLoaded', function() {
+    updateIngredientCount();
+    document.getElementById('ingredients').addEventListener('input', updateIngredientCount);
+});
+</script>
+{% endblock %}

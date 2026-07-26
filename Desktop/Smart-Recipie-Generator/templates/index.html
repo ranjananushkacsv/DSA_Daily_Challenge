@@ -1,0 +1,175 @@
+{% extends "base.html" %}
+
+{% block title %}Home - Smart Recipe Generator{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero">
+    <div class="hero-content">
+        <div class="hero-text">
+            <h1 class="hero-title">Turn Ingredients into <span class="highlight">Delicious Recipes</span></h1>
+            <p class="hero-description">
+                Smart AI-powered recipe generator that helps you create amazing meals from what you already have. 
+                No more food waste, just culinary creativity!
+            </p>
+            <div class="hero-buttons">
+                <a href="{{ url_for('upload_ingredients') }}" class="btn btn-primary">
+                    <i class="fas fa-bolt"></i>
+                    Get Started
+                </a>
+                <a href="#features" class="btn btn-secondary">
+                    <i class="fas fa-info-circle"></i>
+                    Learn More
+                </a>
+            </div>
+        </div>
+        <div class="hero-image">
+    <div class="floating-card card-1">
+        <!-- Remove the duplicate 'static/' in the path -->
+        <img src="{{ url_for('static', filename='images/recipe1.jpg') }}" alt="Recipe 1">
+        <div class="card-overlay">
+            <span>Vegetable Stir Fry</span>
+        </div>
+    </div>
+    <div class="floating-card card-2">
+        <img src="{{ url_for('static', filename='images/recipe2.jpg') }}" alt="Recipe 2">
+        <div class="card-overlay">
+            <span>Smoothie Bowl</span>
+        </div>
+    </div>
+    <div class="floating-card card-3">
+        <img src="{{ url_for('static', filename='images/recipe3.jpg') }}" alt="Recipe 3">
+        <div class="card-overlay">
+            <span>Classic Omelette</span>
+        </div>
+    </div>
+</div>
+</section>
+
+<!-- Features Section -->
+<section id="features" class="features">
+    <div class="container">
+        <h2 class="section-title">Why Choose SmartRecipes?</h2>
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-camera"></i>
+                </div>
+                <h3>Image Recognition</h3>
+                <p>Simply take a photo of your ingredients and let our AI identify them automatically.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-robot"></i>
+                </div>
+                <h3>Smart Matching</h3>
+                <p>Advanced algorithms find the perfect recipes based on your available ingredients.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-heart"></i>
+                </div>
+                <h3>Dietary Preferences</h3>
+                <p>Filter recipes by dietary needs: vegetarian, gluten-free, vegan, and more.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-clock"></i>
+                </div>
+                <h3>Time-Saving</h3>
+                <p>Find recipes that match your available cooking time and schedule.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-mobile-alt"></i>
+                </div>
+                <h3>Mobile Friendly</h3>
+                <p>Use our app anywhere, anytime with our fully responsive design.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-star"></i>
+                </div>
+                <h3>Personalized</h3>
+                <p>Save your favorite recipes and get personalized recommendations.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- How It Works -->
+<section class="how-it-works">
+    <div class="container">
+        <h2 class="section-title">How It Works</h2>
+        <div class="steps">
+            <div class="step">
+                <div class="step-number">1</div>
+                <div class="step-content">
+                    <h3>Add Ingredients</h3>
+                    <p>Upload a photo or type in your available ingredients</p>
+                </div>
+            </div>
+            <div class="step">
+                <div class="step-number">2</div>
+                <div class="step-content">
+                    <h3>Set Preferences</h3>
+                    <p>Choose dietary restrictions, cooking time, and cuisine type</p>
+                </div>
+            </div>
+            <div class="step">
+                <div class="step-number">3</div>
+                <div class="step-content">
+                    <h3>Get Recipes</h3>
+                    <p>Discover perfect recipes matched to your ingredients</p>
+                </div>
+            </div>
+            <div class="step">
+                <div class="step-number">4</div>
+                <div class="step-content">
+                    <h3>Cook & Enjoy</h3>
+                    <p>Follow step-by-step instructions and create delicious meals</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- CTA Section -->
+<section class="cta">
+    <div class="container">
+        <div class="cta-content">
+            <h2>Ready to Start Cooking?</h2>
+            <p>Join thousands of users who are reducing food waste and discovering new recipes</p>
+            <a href="{{ url_for('upload_ingredients') }}" class="btn btn-primary btn-large">
+                <i class="fas fa-magic"></i>
+                Generate Recipes Now
+            </a>
+        </div>
+    </div>
+</section>
+
+{% block scripts %}
+<script>
+// Handle image errors for recipe placeholders
+document.addEventListener('DOMContentLoaded', function() {
+    const images = document.querySelectorAll('.floating-card img');
+    images.forEach(img => {
+        img.addEventListener('error', function() {
+            // You can set a generic food placeholder or hide the image
+            this.style.display = 'none';
+            const overlay = this.nextElementSibling;
+            if (overlay && overlay.classList.contains('card-overlay')) {
+                overlay.style.width = '100%';
+                overlay.style.height = '100%';
+                overlay.style.display = 'flex';
+                overlay.style.alignItems = 'center';
+                overlay.style.justifyContent = 'center';
+                overlay.style.background = 'var(--primary-color)';
+                overlay.style.color = 'white';
+            }
+        });
+    });
+});
+</script>
+{% endblock %}
+{% endblock %}
